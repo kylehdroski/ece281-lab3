@@ -114,24 +114,25 @@ begin
 	end process;
     ---------------------------------------------------------------------------------
 	next_state_logic : process(state, i_left, i_right)
+	   variable v_ns : std_logic_vector(7 downto 0);
 	begin
-	   next_state <= "10000000";
+	   v_ns := "00000000";
 	   
-	   next_state(6) <= i_left and i_right;
+	   v_ns(6) := i_left and i_right;
 	   
-	   next_state(5) <= state(7) and (not i_left) and i_right;
+	   v_ns(5) := state(7) and (not i_left) and i_right;
 	   
-	   next_state(4) <= state(5) and (not i_left) and i_right;
+	   v_ns(4) := state(5) and (not i_left) and i_right;
 	   
-	   next_state(3) <= state(4) and (not i_left) and i_right;
+	   v_ns(3) := state(4) and (not i_left) and i_right;
 	   
-	   next_state(2) <= state(7) and i_left and (not i_right);
+	   v_ns(2) := state(7) and i_left and (not i_right);
 	   
-	   next_state(1) <= state(2) and i_left and (not i_right);
+	   v_ns(1) := state(2) and i_left and (not i_right);
 	   
-	   next_state(0) <= state(1) and i_left and (not i_right);
+	   v_ns(0) := state(1) and i_left and (not i_right);
 	   
-	   next_state(7) <= not (next_state(6) or next_state(5) or next_state(4) or next_state(3) or next_state(2) or next_state(1) or next_state(0));
+	   v_ns(7) := not (next_state(6) or next_state(5) or next_state(4) or next_state(3) or next_state(2) or next_state(1) or next_state(0));
 	   
 	end process;
 	-- PROCESSES --------------------------------------------------------------------
