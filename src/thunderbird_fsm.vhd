@@ -40,14 +40,14 @@
 --|                 --------------------
 --|                  State | Encoding
 --|                 --------------------
---|                  OFF   | 
---|                  ON    | 
---|                  R1    | 
---|                  R2    | 
---|                  R3    | 
---|                  L1    | 
---|                  L2    | 
---|                  L3    | 
+--|                  OFF   | 10000000
+--|                  ON    | 01000000
+--|                  R1    | 00100000
+--|                  R2    | 00010000
+--|                  R3    | 00001000
+--|                  L1    | 00000100
+--|                  L2    | 00000010
+--|                  L3    | 00000001
 --|                 --------------------
 --|
 --|
@@ -86,23 +86,66 @@ library ieee;
   use ieee.numeric_std.all;
  
 entity thunderbird_fsm is 
---  port(
-	
---  );
+  port(
+    i_clk, i_reset : in std_logic;
+    i_left, i_right : in std_logic;
+    o_lights_L : out std_logic_vector(2 downto 0);
+    o_lights_R : out std_logic_vector(2 downto 0)
+  );
 end thunderbird_fsm;
 
 architecture thunderbird_fsm_arch of thunderbird_fsm is 
 
 -- CONSTANTS ------------------------------------------------------------------
-  
+  signal state     : std_logic_vector(7 downto 0);
+  signal next_state: std_logic_vector(7 downto 0);
 begin
 
 	-- CONCURRENT STATEMENTS --------------------------------------------------------	
-	
+	state_reg : process(i_clk)
+	begin
+	   if rising_edge(i_clk) then 
+	       if i_reset = '1' then
+	           state <= "10000000";
+	       else
+	           state <= next_state;
+	       end if;
+	   end if;
+	end process;
     ---------------------------------------------------------------------------------
-	
+	next_state_logic : process(state, i_left, i_right)
+	begin
+	   next_state <= "10000000";
+	   
+	   next_state(6) <= i_left and i_right;
+	   
+	   next_state(5) <= state(7) and (not i_left) and i_right;
+	   
+	   next_state(4) <= state(5) and (not i_left) and i_right;
+	   
+	   next_state(3) <= state(4) and (not i_left) and i_right;
+	   
+	   next_state(2) <= state(7) and i_left and (not i_right);
+	   
+	   next_state(1) <= state(2) and i_left and (not i_right);
+	   
+	   next_state(0) <= state(1) and i_left and (not i_right);
+	   
+	   next_state(7) <= not (next_state(6) or next_state(5) or next_state(4) or next_state(3) or next_state(2) or next_state(1) or next_state(0));
+	   
+	end process;
 	-- PROCESSES --------------------------------------------------------------------
+    o_lights_L(0) <= state(2) or state(1) or state(0) or state(6);
     
+    o_lights_L(1) <= state(1) or state(0) or state(6);
+    
+    o_lights_L(2) <= state(0) or state(6);
+    
+    o_lights_R(0) <= state(5) or state(4) or state(3) or state(6);
+    
+    o_lights_R(1) <= state(4) or state(3) or state(6);
+    
+    o_lights_R(2) <= state(3) or state(6);
 	-----------------------------------------------------					   
 				  
 end thunderbird_fsm_arch;
