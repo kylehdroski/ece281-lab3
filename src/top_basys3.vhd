@@ -84,11 +84,11 @@ entity top_basys3 is
 end top_basys3;
 
 architecture top_basys3_arch of top_basys3 is 
-  
+    signal w_lights_R : std_logic_vector(2 downto 0);
 	-- declare components
     component clock_divider is
         generic (
-            k_Div : natural := 25000000
+            k_Div : natural := 12500000
         );
         port(
             i_clk : in std_logic;
@@ -114,7 +114,7 @@ begin
 	-- PORT MAPS ----------------------------------------
     clk_div_inst : clock_divider
         generic map ( 
-            k_DIV => 25000000
+            k_DIV => 12500000
         )
         port map (
             i_clk => clk,
@@ -129,13 +129,15 @@ begin
                 i_left => sw(15),
                 i_right => sw(0),
                 o_lights_L => led(15 downto 13),
-                o_lights_R => led(2 downto 0)
+                o_lights_R => w_lights_R
             );
        
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-	
+	led(2) <= w_lights_R(0);
+	led(1) <= w_lights_R(1);
+	led(0) <= w_lights_R(2);
 	-- ground unused LEDs
 	-- leave unused switches UNCONNECTED
 	
