@@ -109,7 +109,7 @@ begin
 	   wait for k_CLKPERIOD * 2;
 	   w_right <= '0';
 	   w_reset <= '0';
-	   wait for k_CLKPERIOD;
+	   wait for k_CLKPERIOD * 2;
 	   
 	   w_left <= '1';
 	   w_right <= '0';
